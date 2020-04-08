@@ -32,9 +32,7 @@ def average_pairwise_distance(T):
         double: the average pairwise distance
     """
     path_lengths = nx.all_pairs_dijkstra_path_length(T)
-    total_pairwise_distance = (
-        sum([sum(length[1].values()) for length in path_lengths]) / 2
-    )
+    total_pairwise_distance = sum([sum(length[1].values()) for length in path_lengths])
     return total_pairwise_distance / (len(T) * (len(T) - 1))
 
 
@@ -46,7 +44,9 @@ def average_pairwise_distance_fast(T):
     of the tree to the other. So each edge contributes to the total pairwise cost
     in the following way: if the size of the connected components that are
     created from removing an edge e are A and B, then the total pairwise distance
-    cost for an edge is A * B * w(e) = (# of paths that use that edge) * w(e).
+    cost for an edge is 2 * A * B * w(e) = (# of paths that use that edge) * w(e).
+    We multiply by two to consider both directions that paths can take on an
+    undirected edge.
 
     Since each edge connects a subtree to the rest of a tree, we can run DFS
     to compute the sizes of all of the subtrees, and iterate through all the edges
@@ -87,8 +87,15 @@ def average_pairwise_distance_fast(T):
 
     cost = 0
     for c, p in child_parent_pairs:
+<<<<<<< HEAD
         if c != p:
             a, b = subtree_sizes[c], len(T.nodes) - subtree_sizes[c]
             w = T[c][p]["weight"]
             cost += a * b * w
+=======
+      if c != p:
+        a, b = subtree_sizes[c], len(T.nodes) - subtree_sizes[c]
+        w = T[c][p]['weight']
+        cost += (2 * a * b * w)
+>>>>>>> fix pairwise distance metric
     return cost / (len(T) * (len(T) - 1))
