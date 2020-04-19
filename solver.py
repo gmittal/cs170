@@ -3,6 +3,13 @@ from parse import read_input_file, write_output_file
 from utils import is_valid_network, average_pairwise_distance
 import sys
 
+class LocalSearchSolver:
+    def __init__(init_state):
+        self.state = init_state
+
+class ILPSolver:
+    def __init__(init_state):
+        self.state = init_state
 
 def solve(G):
     """
