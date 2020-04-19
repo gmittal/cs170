@@ -89,15 +89,8 @@ def average_pairwise_distance_fast(T):
 
     cost = 0
     for c, p in child_parent_pairs:
-<<<<<<< HEAD
-        if c != p:
-            a, b = subtree_sizes[c], len(T.nodes) - subtree_sizes[c]
-            w = T[c][p]["weight"]
-            cost += a * b * w
-=======
       if c != p:
         a, b = subtree_sizes[c], len(T.nodes) - subtree_sizes[c]
         w = T[c][p]['weight']
         cost += (2 * a * b * w)
->>>>>>> fix pairwise distance metric
     return cost / (len(T) * (len(T) - 1))
