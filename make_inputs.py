@@ -1,7 +1,7 @@
 """
 Generates graph inputs.
 
-Usage: python make_inputs.py -n 10 -p 0.4
+Usage: python make_inputs.py 10 0.4
 """
 import argparse
 import random
