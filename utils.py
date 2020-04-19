@@ -22,7 +22,7 @@ def average_pairwise_distance(T):
     This is what we want to minimize!
 
     Note that this function is a little naive, i.e. there are much
-    faster ways to compute the average pairwise distance in a tree. 
+    faster ways to compute the average pairwise distance in a tree.
     Feel free to write your own!
 
     Args:
@@ -32,9 +32,7 @@ def average_pairwise_distance(T):
         double: the average pairwise distance
     """
     path_lengths = nx.all_pairs_dijkstra_path_length(T)
-    total_pairwise_distance = (
-        sum([sum(length[1].values()) for length in path_lengths]) / 2
-    )
+    total_pairwise_distance = sum([sum(length[1].values()) for length in path_lengths])
     return total_pairwise_distance / (len(T) * (len(T) - 1))
 
 
@@ -46,7 +44,9 @@ def average_pairwise_distance_fast(T):
     of the tree to the other. So each edge contributes to the total pairwise cost
     in the following way: if the size of the connected components that are
     created from removing an edge e are A and B, then the total pairwise distance
-    cost for an edge is A * B * w(e) = (# of paths that use that edge) * w(e).
+    cost for an edge is 2 * A * B * w(e) = (# of paths that use that edge) * w(e).
+    We multiply by two to consider both directions that paths can take on an
+    undirected edge.
 
     Since each edge connects a subtree to the rest of a tree, we can run DFS
     to compute the sizes of all of the subtrees, and iterate through all the edges
@@ -64,14 +64,16 @@ def average_pairwise_distance_fast(T):
     marked = defaultdict(bool)
     # store child parent relationships for each edge, because the components
     # created when removing an edge are the child subtree and the rest of the vertices
-    child_parent_pairs = [(0, 0)]
+    root = list(T.nodes)[0];
+    
+    child_parent_pairs = [(root, root)]
 
     def calculate_subtree_sizes(u):
         """Iterates through the tree to compute all subtree sizes in linear time
-        
+
         Args:
             u: the root of the subtree to start the DFS
-        
+
         """
         unmarked_neighbors = filter(lambda v: not marked[v], T.neighbors(u))
         marked[u] = True
@@ -83,12 +85,12 @@ def average_pairwise_distance_fast(T):
         subtree_sizes[u] = size + 1
         return subtree_sizes[u]
 
-    calculate_subtree_sizes(0)  # any vertex can be the root of a tree
+    calculate_subtree_sizes(root)  # any vertex can be the root of a tree
 
     cost = 0
     for c, p in child_parent_pairs:
         if c != p:
             a, b = subtree_sizes[c], len(T.nodes) - subtree_sizes[c]
             w = T[c][p]["weight"]
-            cost += a * b * w
+            cost += 2 * a * b * w
     return cost / (len(T) * (len(T) - 1))
