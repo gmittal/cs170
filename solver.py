@@ -14,7 +14,7 @@ class Solver:
 
 class LocalSearchSolver(Solver):
     """
-    Local search with simulated annealing solver.
+    Local search with cyclic simulated annealing.
     """
     def start(self):
         """
@@ -45,29 +45,39 @@ class LocalSearchSolver(Solver):
 
         return successor
 
+    def prob_sched(self, step, min_p, max_p, gamma):
+        """
+        Cyclic (sinusoidal) simulated annealing schedule.
+        """
+        s = (1 / (gamma * step)) * (max_p - min_p) * ((np.sin(step) + 1) / 2) + min_p
+        return min(max_p, s)
+
     def solve(self):
         """
         Finds 'optimal' T network for graph.
         """
+        STEPS = 50000
+        MAX_PROB = 0.6
+        MIN_PROB = 5e-4
+        GAMMA = 0.1
 
-        STEPS = 100000
         self.start()
 
-        for i in range(STEPS):
-            neighbor = self.neighbor()
+        for episode in range(10):
+            for i in range(STEPS):
+                neighbor = self.neighbor()
 
-            try:
-                f = average_pairwise_distance_fast(self.network)
-                f_p = average_pairwise_distance_fast(neighbor)
-            except:
-                continue
+                try:
+                    f = average_pairwise_distance_fast(self.network)
+                    f_p = average_pairwise_distance_fast(neighbor)
+                except:
+                    continue
 
-            temperature = i + 1
-            prob = np.exp(-1e-2 * temperature)
+                prob = self.prob_sched(i + 1, MIN_PROB, MAX_PROB, GAMMA)
 
-            if is_valid_network(self.graph, neighbor) and (f_p <= f or np.random.random() <= prob):
-                print(f_p, f, prob)
-                self.network = neighbor
+                if is_valid_network(self.graph, neighbor) and (f_p <= f or np.random.random() <= prob):
+                    print(f_p, f, prob)
+                    self.network = neighbor
 
         return self.network
 
