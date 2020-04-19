@@ -44,4 +44,5 @@ def generate_input(n=10, p=0.1):
     write_input_file(make_graph(n, p), "./inputs/{}.in".format(n))
 
 if __name__ == "__main__":
+    assert args.vertices < 100 and args.prob > 0 and args.prob <= 1
     generate_input(args.vertices, args.prob)
