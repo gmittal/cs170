@@ -14,16 +14,16 @@ class Solver:
 
 class LocalSearchSolver(Solver):
     """
-    Local search with cyclic simulated annealing.
+    Local search with simulated annealing.
     """
-    def start(self):
+    def _start(self):
         """
         Starting state for T.
         """
         self.network = nx.minimum_spanning_tree(self.graph)
         assert is_valid_network(self.graph, self.network)
         
-    def neighbor(self):
+    def _neighbor(self):
         """
         Choose an node in G uniformly, and toggle its inclusion in T.
         """
@@ -45,41 +45,54 @@ class LocalSearchSolver(Solver):
 
         return successor
 
-    def prob_sched(self, step, min_p, max_p, gamma):
+    def _prob_sched(self, step, delta):
         """
-        Cyclic (sinusoidal) simulated annealing schedule.
+        Simulated annealing schedule.
         """
-        s = (1 / (gamma * step)) * (max_p - min_p) * ((np.sin(step) + 1) / 2) + min_p
-        return min(max_p, s)
+        temperature = 3 / step
+        return np.exp(-delta / temperature)
+
+    def _search(self, steps):
+        """
+        Performs one iteration of local search and returns a possible T.
+        """
+        self._start()
+        transitions = 0
+        for i in range(steps):
+            neighbor = self._neighbor()
+
+            # If the neighbor is invalid, ignore it.
+            if is_valid_network(self.graph, neighbor):
+                f = average_pairwise_distance_fast(self.network)
+                f_p = average_pairwise_distance_fast(neighbor)
+
+                delta = f_p - f
+                prob = self._prob_sched(transitions + 1, delta)
+
+                # Transition?
+                if delta < 0:
+                    print(f_p)
+                    transitions += 1
+                    self.network = neighbor    
+                elif np.random.random() <= prob:
+                    print(f_p, prob)
+                    transitions += 1
+                    self.network = neighbor
+
+        return self.network
+
 
     def solve(self):
         """
         Finds 'optimal' T network for graph.
         """
-        STEPS = 50000
-        MAX_PROB = 0.6
-        MIN_PROB = 5e-4
-        GAMMA = 0.1
+        STEPS = 2000
+        RESTARTS = 10
+        
+        solutions = [self._search(STEPS).copy() for _ in range(RESTARTS)]
+        self.network = min(solutions, key=average_pairwise_distance_fast)
 
-        self.start()
-
-        for episode in range(10):
-            for i in range(STEPS):
-                neighbor = self.neighbor()
-
-                try:
-                    f = average_pairwise_distance_fast(self.network)
-                    f_p = average_pairwise_distance_fast(neighbor)
-                except:
-                    continue
-
-                prob = self.prob_sched(i + 1, MIN_PROB, MAX_PROB, GAMMA)
-
-                if is_valid_network(self.graph, neighbor) and (f_p <= f or np.random.random() <= prob):
-                    print(f_p, f, prob)
-                    self.network = neighbor
-
-        return self.network
+        return self.network    
 
 class ILPSolver(Solver):
     """
