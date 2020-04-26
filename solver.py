@@ -62,7 +62,7 @@ class LocalSearchSolver(Solver):
             neighbor = self._neighbor()
 
             # If the neighbor is invalid, ignore it.
-            if is_valid_network(self.graph, neighbor):
+            if neighbor.nodes and is_valid_network(self.graph, neighbor):
                 f = average_pairwise_distance_fast(self.network)
                 f_p = average_pairwise_distance_fast(neighbor)
 
