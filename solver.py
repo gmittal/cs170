@@ -37,10 +37,17 @@ class LocalSearchSolver(Solver):
             assert not successor.has_node(node)
         else:
             successor.add_node(node)
-            for u, v in self.graph.edges(node):
-                if successor.has_node(v):
-                    weight = self.graph.get_edge_data(u, v)
-                    successor.add_edge(u, v, **weight)
+            edges = list(self.graph.edges(node))
+            edge = edges[np.random.randint(0, len(edges))]
+            weight = self.graph.get_edge_data(*edge)
+            successor.add_edge(*edge, **weight)
+
+            # for u, v in edges:
+            #     if successor.has_node(v):
+            #         weight = self.graph.get_edge_data(u, v)
+
+            #         if np.random.random() < 1 / len(edges):
+            #             successor.add_edge(u, v, **weight)
             assert successor.has_node(node)
 
         return successor
@@ -49,7 +56,7 @@ class LocalSearchSolver(Solver):
         """
         Simulated annealing schedule.
         """
-        temperature = 3 / step
+        temperature = 1 / step
         return np.exp(-delta / temperature)
 
     def _search(self, steps):
@@ -86,8 +93,8 @@ class LocalSearchSolver(Solver):
         """
         Finds 'optimal' T network for graph.
         """
-        STEPS = 2000
-        RESTARTS = 10
+        STEPS = 10000
+        RESTARTS = 20
         
         solutions = [self._search(STEPS).copy() for _ in range(RESTARTS)]
         self.network = min(solutions, key=average_pairwise_distance_fast)
