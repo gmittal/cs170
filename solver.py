@@ -4,6 +4,8 @@ from parse import read_input_file, write_output_file
 from utils import is_valid_network, average_pairwise_distance_fast
 import sys
 
+from viz import draw_graph
+
 class Solver:
     def __init__(self, graph):
         self.graph = graph # G
@@ -23,7 +25,7 @@ class LocalSearchSolver(Solver):
         self.network = nx.minimum_spanning_tree(self.graph)
         assert is_valid_network(self.graph, self.network)
         
-    def _neighbor(self):
+    def _neighbors(self):
         """
         Choose an node in G uniformly, and toggle its inclusion in T.
         """
@@ -32,31 +34,30 @@ class LocalSearchSolver(Solver):
         idx = np.random.randint(0, len(nodes))
         node = nodes[idx] 
 
+        successors = []
+
         if successor.has_node(node):
             successor.remove_node(node)
             assert not successor.has_node(node)
+            successors.append(successor)
         else:
             successor.add_node(node)
             edges = list(self.graph.edges(node))
-            edge = edges[np.random.randint(0, len(edges))]
-            weight = self.graph.get_edge_data(*edge)
-            successor.add_edge(*edge, **weight)
-
-            # for u, v in edges:
-            #     if successor.has_node(v):
-            #         weight = self.graph.get_edge_data(u, v)
-
-            #         if np.random.random() < 1 / len(edges):
-            #             successor.add_edge(u, v, **weight)
+            for u, v in edges:
+                s = successor.copy()
+                if successor.has_node(v):
+                    weight = self.graph.get_edge_data(u, v)
+                    s.add_edge(u, v, **weight)
+                successors.append(s)
             assert successor.has_node(node)
 
-        return successor
+        return successors
 
     def _prob_sched(self, step, delta):
         """
         Simulated annealing schedule.
         """
-        temperature = 1 / step
+        temperature = 3 / step
         return np.exp(-delta / temperature)
 
     def _search(self, steps):
@@ -66,7 +67,12 @@ class LocalSearchSolver(Solver):
         self._start()
         transitions = 0
         for i in range(steps):
-            neighbor = self._neighbor()
+            neighbors = [n for n in self._neighbors() if len(n.nodes) > 0 and is_valid_network(self.graph, n)]
+
+            if neighbors == []:
+                continue
+            else:
+                neighbor = min(neighbors, key=average_pairwise_distance_fast)
 
             # If the neighbor is invalid, ignore it.
             if neighbor.nodes and is_valid_network(self.graph, neighbor):
@@ -93,8 +99,8 @@ class LocalSearchSolver(Solver):
         """
         Finds 'optimal' T network for graph.
         """
-        STEPS = 10000
-        RESTARTS = 20
+        STEPS = 5000
+        RESTARTS = 10
         
         solutions = [self._search(STEPS).copy() for _ in range(RESTARTS)]
         self.network = min(solutions, key=average_pairwise_distance_fast)
@@ -118,6 +124,8 @@ def solve(G):
     """
     solver = LocalSearchSolver(G)
     T = solver.solve()
+    draw_graph(G)
+    draw_graph(T)
     return T
 
 # Here's an example of how to run your solver.
