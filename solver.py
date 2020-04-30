@@ -99,8 +99,8 @@ class LocalSearchSolver(Solver):
         """
         Finds 'optimal' T network for graph.
         """
-        STEPS = 5000
-        RESTARTS = 10
+        STEPS = 10000
+        RESTARTS = 50
         
         solutions = [self._search(STEPS).copy() for _ in range(RESTARTS)]
         self.network = min(solutions, key=average_pairwise_distance_fast)
