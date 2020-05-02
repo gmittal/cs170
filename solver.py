@@ -77,11 +77,7 @@ class LocalSearchSolver(Solver):
 
         if successor.has_node(node):
             successor.remove_node(node)
-
-            if nx.is_connected(successor):
-                successors.append(successor)
-
-
+            successors.append(successor)
             assert not successor.has_node(node)
         else:
             successor.add_node(node)
