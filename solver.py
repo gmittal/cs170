@@ -5,8 +5,6 @@ from utils import is_valid_network, average_pairwise_distance_fast
 import sys
 import random
 
-from viz import draw_graph
-
 class Solver:
     def __init__(self, graph):
         self.graph = graph # G
@@ -146,12 +144,6 @@ class LocalSearchSolver(Solver):
 
         return self.network    
 
-class ILPSolver(Solver):
-    """
-    ILP Solver.
-    """
-    def solve(self):
-        pass
 
 def solve(G):
     """
