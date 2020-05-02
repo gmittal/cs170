@@ -59,6 +59,7 @@ class LocalSearchSolver(Solver):
             self.network.add_nodes_from(T_nodes)
             self.network.add_weighted_edges_from(self.relevant_edges(T_nodes))
             self.network = nx.minimum_spanning_tree(self.network)
+            s += 1
         print("Created valid network")
             
         
