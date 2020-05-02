@@ -3,6 +3,7 @@ import networkx as nx
 from parse import read_input_file, write_output_file
 from utils import is_valid_network, average_pairwise_distance_fast
 import sys
+import random
 
 from viz import draw_graph
 
@@ -22,8 +23,45 @@ class LocalSearchSolver(Solver):
         """
         Starting state for T.
         """
-        self.network = nx.minimum_spanning_tree(self.graph)
+        #Adi: Let's try randomizing the start valid state with this method
+        #self.network = nx.minimum_spanning_tree(self.graph)
+        self.random_valid_graph()
         assert is_valid_network(self.graph, self.network)
+
+    def relevant_edges(self, nodes):
+        edges = []
+        for e in self.graph.edges(nodes):
+            if e[0] in nodes and e[1] in nodes:
+                weight = self.graph.get_edge_data(*e)
+                edges.append((*e, weight['weight']))
+        return edges
+
+    def random_valid_graph(self, s=1, d=0):
+        """
+        Returns a random valid starting state for local search.
+        s: number of nodes to form T on 
+        d: minimum degree of each node on s
+        """
+
+        nodes = list(self.graph.nodes)
+        edges = list(self.graph.edges)
+        self.network = nx.Graph()
+        self.network.add_node(nodes[1])
+        #self.network.add_edges_from(edges)
+        self.network = nx.minimum_spanning_tree(self.network)
+        print("Graph Size:", len(nodes))
+        s = random.randint(int(len(nodes)/2), len(nodes)) 
+        print("Subset Size:", s)
+        while not is_valid_network(self.graph, self.network):
+            print("Looking")
+            self.network.clear()
+            T_nodes = random.sample(nodes, s) 
+            self.network.add_nodes_from(T_nodes)
+            self.network.add_weighted_edges_from(self.relevant_edges(T_nodes))
+            self.network = nx.minimum_spanning_tree(self.network)
+        print("Created valid network")
+            
+        
         
     def _neighbors(self):
         """
