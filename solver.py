@@ -50,8 +50,7 @@ class LocalSearchSolver(Solver):
         #self.network.add_edges_from(edges)
         self.network = nx.minimum_spanning_tree(self.network)
         print("Graph Size:", len(nodes))
-        s = random.randint(1, len(nodes)) 
-        s = 18
+        s = random.randint(int(len(nodes)/2), len(nodes)) 
         print("Subset Size:", s)
         while not is_valid_network(self.graph, self.network):
             print("Looking")
