@@ -38,8 +38,12 @@ class LocalSearchSolver(Solver):
 
         if successor.has_node(node):
             successor.remove_node(node)
+
+            if nx.is_connected(successor):
+                successors.append(successor)
+
+
             assert not successor.has_node(node)
-            successors.append(successor)
         else:
             successor.add_node(node)
             edges = list(self.graph.edges(node))
@@ -100,7 +104,7 @@ class LocalSearchSolver(Solver):
         Finds 'optimal' T network for graph.
         """
         STEPS = 10000
-        RESTARTS = 50
+        RESTARTS = 10
         
         solutions = [self._search(STEPS).copy() for _ in range(RESTARTS)]
         self.network = min(solutions, key=average_pairwise_distance_fast)
@@ -124,8 +128,6 @@ def solve(G):
     """
     solver = LocalSearchSolver(G)
     T = solver.solve()
-    draw_graph(G)
-    draw_graph(T)
     return T
 
 # Here's an example of how to run your solver.

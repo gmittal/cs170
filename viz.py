@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 import networkx as nx
+import sys
+from parse import read_input_file, read_output_file
 
 def draw_graph(graph, labels=None, graph_layout='spring',
                node_size=3200, node_color='blue', node_alpha=0.3,
@@ -25,3 +27,9 @@ def draw_graph(graph, labels=None, graph_layout='spring',
     nx.draw_networkx_labels(G, graph_pos,font_size=node_text_size,
                             font_family=text_font)
     plt.show()
+
+if __name__ == '__main__':
+    assert len(sys.argv) == 2
+    path = sys.argv[1]
+    G = read_input_file(path)
+    draw_graph(G)
