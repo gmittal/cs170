@@ -32,7 +32,8 @@ class LocalSearchSolver(Solver):
         edges = []
         for e in self.graph.edges(nodes):
             if e[0] in nodes and e[1] in nodes:
-                edges.append(e)
+                weight = self.graph.get_edge_data(*e)
+                edges.append((*e, weight['weight']))
         return edges
 
     def random_valid_graph(self, s=1, d=0):
@@ -57,7 +58,7 @@ class LocalSearchSolver(Solver):
             self.network.clear()
             T_nodes = random.sample(nodes, s) 
             self.network.add_nodes_from(T_nodes)
-            self.network.add_edges_from(self.relevant_edges(T_nodes))
+            self.network.add_weighted_edges_from(self.relevant_edges(T_nodes))
             self.network = nx.minimum_spanning_tree(self.network)
         print("Created valid network")
             
