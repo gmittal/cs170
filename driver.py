@@ -22,6 +22,8 @@ def start_job():
     inputs = inputs['input'].values
     inputs_per_box = len(inputs) // len(servers)
 
+    total = 0
+
     for i in range(len(servers)):
         server = servers[i]
         if i == len(servers) - 1:
@@ -29,10 +31,14 @@ def start_job():
         else:
             workload = inputs[i*inputs_per_box:(i+1)*inputs_per_box]
 
+        total += len(workload)
+
         workload_str = ' '.join(["inputs/{}.in".format(w) for w in workload])
 
         script = """cd ~/cs170; tmux new -d -s 0; tmux send-keys -t 0 "source venv/bin/activate; python solver.py {}" ENTER;""".format(workload_str)
         subprocess.run(["ssh", server, script])
+
+    assert total == len(inputs)
 
 if __name__ == "__main__":
     update_all()
