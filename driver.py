@@ -14,6 +14,10 @@ def get_ips():
         content = f.readlines()
     return [x.strip() for x in content]
 
+def reset_ssh():
+    for server in get_ips():
+        subprocess.run(["ssh-keygen", "-R", "{}".format(server)])
+
 def start_job():
     servers = get_ips()
 
