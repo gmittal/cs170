@@ -5,7 +5,8 @@ from utils import is_valid_network, average_pairwise_distance_fast
 import sys
 import random
 from tqdm import tqdm
-
+from networkx.algorithms.approximation import min_weighted_dominating_set
+from networkx.algorithms import dijkstra_path
 class Solver:
     def __init__(self, graph):
         self.graph = graph # G
@@ -23,7 +24,8 @@ class LocalSearchSolver(Solver):
         Starting state for T.
         """
         # self.network = nx.minimum_spanning_tree(self.graph)
-        self.random_valid_graph(high_degree=True)
+        #self.random_valid_graph(high_degree=True)
+        self.generate_random_new_way()
         assert is_valid_network(self.graph, self.network)
 
     def relevant_edges(self, nodes):
@@ -34,7 +36,7 @@ class LocalSearchSolver(Solver):
                 edges.append((*e, weight['weight']))
         return edges
 
-    def random_valid_graph(self, s=1, d=0, high_degree=False):
+    def generate_random_old_way(self, s=1, d=0, high_degree=False):
         """
         Returns a random valid starting state for local search.
         s: number of nodes to form T on 
@@ -65,8 +67,20 @@ class LocalSearchSolver(Solver):
             self.network = nx.minimum_spanning_tree(self.network)
             s += 1
         # print("Created valid network")
-            
         
+    def generate_random_new_way(self):
+        og = min_weighted_dominating_set(self.graph,"weight")
+        start_node = og.pop()
+        holder = set()
+        while og: 
+            curr_node = og.pop()
+            holder.update(dijkstra_path(self.graph,start_node,curr_node))
+        
+        if holder and is_valid_network(self.graph,self.graph.subgraph(holder)): 
+            self.network = nx.minimum_spanning_tree(self.graph.subgraph(holder))
+        else: 
+            self.generate_random_old_way(high_degree=True)
+            
         
     def _neighbors(self):
         """
@@ -142,8 +156,8 @@ class LocalSearchSolver(Solver):
         """
         Finds 'optimal' T network for graph.
         """
-        STEPS = 10000
-        RESTARTS = 15
+        STEPS = 5000
+        RESTARTS = 10
         
         solutions = [self._search(STEPS).copy() for _ in range(RESTARTS)]
         self.network = min(solutions, key=average_pairwise_distance_fast)
