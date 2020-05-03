@@ -7,7 +7,7 @@ import pandas as pd
 
 def update_all():
     for server in get_ips():
-        subprocess.run(["ssh", server, "tmux kill-server; cd ~/cs170; git pull; source venv/bin/activate; pip install -r requirements.txt"])
+        subprocess.run(["ssh", server, "tmux kill-server; cd ~/cs170; git reset --hard HEAD; git pull; source venv/bin/activate; pip install -r requirements.txt"])
 
 def get_ips():
     with open('ips.txt', 'r') as f:
@@ -47,4 +47,4 @@ def start_job():
 
 if __name__ == "__main__":
     update_all()
-    start_job()
+    # start_job()

@@ -22,9 +22,8 @@ class LocalSearchSolver(Solver):
         """
         Starting state for T.
         """
-        #Adi: Let's try randomizing the start valid state with this method
-        #self.network = nx.minimum_spanning_tree(self.graph)
-        self.random_valid_graph()
+        # self.network = nx.minimum_spanning_tree(self.graph)
+        self.random_valid_graph(high_degree=True)
         assert is_valid_network(self.graph, self.network)
 
     def relevant_edges(self, nodes):
@@ -35,7 +34,7 @@ class LocalSearchSolver(Solver):
                 edges.append((*e, weight['weight']))
         return edges
 
-    def random_valid_graph(self, s=1, d=0):
+    def random_valid_graph(self, s=1, d=0, high_degree=False):
         """
         Returns a random valid starting state for local search.
         s: number of nodes to form T on 
@@ -45,11 +44,17 @@ class LocalSearchSolver(Solver):
         nodes = list(self.graph.nodes)
         edges = list(self.graph.edges)
         self.network = nx.Graph()
-        self.network.add_node(nodes[0])
-        #self.network.add_edges_from(edges)
+
+        a = sorted(nodes, key=lambda n: len(self.graph.edges(n)), reverse=True)
+
+        if high_degree:
+            self.network.add_node(a[0])
+        else:
+            self.network.add_node(nodes[0])
+
         self.network = nx.minimum_spanning_tree(self.network)
         # print("Graph Size:", len(nodes))
-        s = random.randint(int(len(nodes)/2), len(nodes)) 
+        s = random.randint(len(nodes) // 2, len(nodes)) 
         # print("Subset Size:", s)
         while not is_valid_network(self.graph, self.network):
             # print("Looking")
