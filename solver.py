@@ -45,7 +45,7 @@ class LocalSearchSolver(Solver):
         nodes = list(self.graph.nodes)
         edges = list(self.graph.edges)
         self.network = nx.Graph()
-        self.network.add_node(nodes[1])
+        self.network.add_node(nodes[0])
         #self.network.add_edges_from(edges)
         self.network = nx.minimum_spanning_tree(self.network)
         # print("Graph Size:", len(nodes))
@@ -122,11 +122,11 @@ class LocalSearchSolver(Solver):
 
                 # Transition?
                 if delta < 0:
-                    # print(f_p)
+                    print(f_p)
                     transitions += 1
                     self.network = neighbor    
                 elif np.random.random() <= prob:
-                    # print(f_p, prob)
+                    print(f_p, prob)
                     transitions += 1
                     self.network = neighbor
 
