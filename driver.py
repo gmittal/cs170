@@ -38,6 +38,7 @@ def start_job():
         script = """cd ~/cs170; tmux new -d -s 0; tmux send-keys -t 0 "source venv/bin/activate; python solver.py {}" ENTER;""".format(workload_str)
         subprocess.run(["ssh", server, script])
 
+    print("Total inputs deployed: {}".format(total))
     assert total == len(inputs)
 
 if __name__ == "__main__":
