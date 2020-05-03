@@ -4,6 +4,7 @@ from parse import read_input_file, write_output_file
 from utils import is_valid_network, average_pairwise_distance_fast
 import sys
 import random
+from tqdm import tqdm
 
 class Solver:
     def __init__(self, graph):
@@ -47,18 +48,18 @@ class LocalSearchSolver(Solver):
         self.network.add_node(nodes[1])
         #self.network.add_edges_from(edges)
         self.network = nx.minimum_spanning_tree(self.network)
-        print("Graph Size:", len(nodes))
+        # print("Graph Size:", len(nodes))
         s = random.randint(int(len(nodes)/2), len(nodes)) 
-        print("Subset Size:", s)
+        # print("Subset Size:", s)
         while not is_valid_network(self.graph, self.network):
-            print("Looking")
+            # print("Looking")
             self.network.clear()
             T_nodes = random.sample(nodes, s) 
             self.network.add_nodes_from(T_nodes)
             self.network.add_weighted_edges_from(self.relevant_edges(T_nodes))
             self.network = nx.minimum_spanning_tree(self.network)
             s += 1
-        print("Created valid network")
+        # print("Created valid network")
             
         
         
@@ -121,11 +122,11 @@ class LocalSearchSolver(Solver):
 
                 # Transition?
                 if delta < 0:
-                    print(f_p)
+                    # print(f_p)
                     transitions += 1
                     self.network = neighbor    
                 elif np.random.random() <= prob:
-                    print(f_p, prob)
+                    # print(f_p, prob)
                     transitions += 1
                     self.network = neighbor
 
@@ -137,7 +138,7 @@ class LocalSearchSolver(Solver):
         Finds 'optimal' T network for graph.
         """
         STEPS = 10000
-        RESTARTS = 10
+        RESTARTS = 15
         
         solutions = [self._search(STEPS).copy() for _ in range(RESTARTS)]
         self.network = min(solutions, key=average_pairwise_distance_fast)
@@ -162,13 +163,15 @@ def solve(G):
 # Usage: python3 solver.py test.in
 
 if __name__ == '__main__':
-    assert len(sys.argv) == 2
-    path = sys.argv[1]
-    G = read_input_file(path)
-    T = solve(G)
-    assert is_valid_network(G, T)
-    
-    print("="*30)
-    print("Average pairwise distance: {}".format(average_pairwise_distance_fast(T)))
-    output = path.split('/')[-1].split('.')[0]
-    write_output_file(T, 'outputs/{}.out'.format(output))
+    paths = sys.argv[1:]
+
+    for i in tqdm(range(len(paths))):
+        path = paths[i]
+        G = read_input_file(path)
+        T = solve(G)
+        assert is_valid_network(G, T)
+        
+        print("="*30)
+        print("Average pairwise distance: {}".format(average_pairwise_distance_fast(T)))
+        output = path.split('/')[-1].split('.')[0]
+        write_output_file(T, 'outputs/{}.out'.format(output))

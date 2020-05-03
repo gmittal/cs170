@@ -7,12 +7,15 @@ import pandas as pd
 from solver import LocalSearchSolver
 
 if __name__ == "__main__":
-    output_dir = "submission"
+    output_dir = "out"
     input_dir = "inputs"
     
-    for input_path in os.listdir(input_dir):
-        graph_name = input_path.split(".")[0]
-        G = read_input_file(f"{input_dir}/{input_path}")
+    inputs = pd.read_csv('leaderboard.csv')
+    # inputs = inputs.loc[inputs['rank'] > 1]
+    inputs = inputs['input'].values
+
+    for graph_name in inputs:
+        G = read_input_file(f"{input_dir}/{graph_name}.in")
         solver = LocalSearchSolver(G)
         T = solver.solve()
 
