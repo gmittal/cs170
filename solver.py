@@ -122,11 +122,11 @@ class LocalSearchSolver(Solver):
 
                 # Transition?
                 if delta < 0:
-                    print(f_p)
+                    # print(f_p)
                     transitions += 1
                     self.network = neighbor    
                 elif np.random.random() <= prob:
-                    print(f_p, prob)
+                    # print(f_p, prob)
                     transitions += 1
                     self.network = neighbor
 
