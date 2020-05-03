@@ -7,7 +7,7 @@ import pandas as pd
 
 def update_all():
     for server in get_ips():
-        subprocess.run(["ssh", server, "cd ~/cs170; git pull"])
+        subprocess.run(["ssh", server, "tmux kill-server; cd ~/cs170; git pull; source venv/bin/activate; pip install -r requirements.txt"])
 
 def get_ips():
     with open('ips.txt', 'r') as f:
@@ -30,8 +30,6 @@ def start_job():
             workload = inputs[i*inputs_per_box:(i+1)*inputs_per_box]
 
         workload_str = ' '.join(["inputs/{}".format(w) for w in workload])
-
-        import pdb; pdb.set_trace()
 
         script = """cd ~/cs170; tmux new -d -s 0; tmux send-keys -t 0 "source venv/bin/activate; python solver.py {}" ENTER;""".format(workload_str)
         subprocess.run(["ssh", server, script])
