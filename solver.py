@@ -24,7 +24,7 @@ class LocalSearchSolver(Solver):
         Starting state for T.
         """
         # self.network = nx.minimum_spanning_tree(self.graph)
-        #self.random_valid_graph(high_degree=True)
+        # self.generate_random_old_way(high_degree=True)
         self.generate_random_new_way()
         assert is_valid_network(self.graph, self.network)
 
@@ -156,8 +156,8 @@ class LocalSearchSolver(Solver):
         """
         Finds 'optimal' T network for graph.
         """
-        STEPS = 5000
-        RESTARTS = 10
+        STEPS = 10000
+        RESTARTS = 15
         
         solutions = [self._search(STEPS).copy() for _ in range(RESTARTS)]
         self.network = min(solutions, key=average_pairwise_distance_fast)
