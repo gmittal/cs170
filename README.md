@@ -9,12 +9,13 @@ Gautam Mittal, Adi Ganapathi, Amit Narang
 All code is written in Python 3. Our algorithm leverages the staff skeleton code in `utils.py` and `parse.py`.
 
 Create a virtual environment and install dependencies:
+
 ```
 virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
-
+*If you don't have virtualenv, you can install it like this:* ```sudo pip install virtualenv```
 ## Generating solutions
 To run the solver on an input file:
 ```
