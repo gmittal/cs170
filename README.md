@@ -1,14 +1,14 @@
 # CS 170 Project (Spring 2020)
 
-Local search + simulated annealing + random restarts = our solver for minimum average pairwise distance in the network routing problem.
+Local search + simulated annealing + random restarts = approximate solutions to NP-Hard problems.
 
 ### Contributors
 Gautam Mittal, Adi Ganapathi, Amit Narang
 
 ## Installation
-All code is written in Python 3. 
+All code is written in Python 3. Our algorithm leverages the staff skeleton code in `utils.py` and `parse.py`.
 
-Create a virtual environment and install all relevant dependencies:
+Create a virtual environment and install dependencies:
 ```
 virtualenv venv
 source venv/bin/activate
@@ -36,7 +36,7 @@ These programs will generate relevant `.out` files in an `outputs` folder.
 ## Generating solutions (in the cloud)
 Sometimes our solver takes a long time to run. Here's a way to speed things up by distributing the work across multiple machines. We used Google Compute Engine, but any set of computers with a public IP addresses should work.
 
-Create an `ips.txt` in the root of the repository, for example:
+Create an `ips.txt` in the root of the repository. For example, the following file will tell `driver.py` to spin up a distributed job across 12 machines:
 ```
 35.236.119.37
 34.125.109.175
