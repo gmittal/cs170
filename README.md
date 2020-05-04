@@ -15,7 +15,7 @@ virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
-*If you don't have virtualenv, you can install it like this:* ```sudo pip install virtualenv```
+*If you don't have virtualenv, you can install it like this:* ```pip install virtualenv```
 ## Generating solutions
 To run the solver on an input file:
 ```
