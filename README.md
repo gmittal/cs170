@@ -1,6 +1,6 @@
 # CS 170 Project (Spring 2020)
 
-Local search + simulated annealing + random restarts = approximate solutions to NP-Hard problems.
+Local search + simulated annealing + random restarts = approximate solutions to NP-Hard problems
 
 ### Contributors
 Gautam Mittal, Adi Ganapathi, Amit Narang
