@@ -22,7 +22,10 @@ def start_job():
     servers = get_ips()
 
     inputs = pd.read_csv('leaderboard.csv')
-    inputs = inputs.loc[inputs['rank'] > 20]
+
+    # Change the filtering condition if needed
+    # inputs = inputs.loc[inputs['rank'] > 20]
+    
     inputs = inputs['input'].values
     inputs_per_box = len(inputs) // len(servers)
 
