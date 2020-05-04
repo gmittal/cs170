@@ -76,7 +76,7 @@ class LocalSearchSolver(Solver):
             curr_node = og.pop()
             holder.update(dijkstra_path(self.graph,start_node,curr_node))
         
-        if is_valid_network(self.graph,self.graph.subgraph(holder)): 
+        if holder and is_valid_network(self.graph,self.graph.subgraph(holder)): 
             self.network = nx.minimum_spanning_tree(self.graph.subgraph(holder))
         else: 
             self.generate_random_old_way(high_degree=True)
